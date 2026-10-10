@@ -169,19 +169,19 @@ export default function Home() {
 
       {/* Formulario de Subida con estilo oscuro */}
       <section className={styles['upload-card']}>
-        <h2 className={styles['upload-card-title']}>Subir una nueva foto</h2>
+        <h2 className={styles['upload-card-title']}>Publicar foto o video</h2>
         <form onSubmit={handleUpload} className={styles['upload-form']}>
           <div className={styles['file-input-wrapper']}>
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               required
               onChange={(e) => setFile(e.target.files[0])}
             />
             <span className={styles['file-label-text']}>
-              {file ? file.name : 'Haz clic o arrastra una imagen aquí'}
+              {file ? file.name : 'Haz clic o arrastra una foto o video aquí'}
             </span>
-            <span className={styles['file-label-hint']}>Formatos admitidos: JPG, PNG, WEBP, GIF</span>
+            <span className={styles['file-label-hint']}>Formatos admitidos: JPG, PNG, WEBP, GIF, MP4, WEBM</span>
           </div>
 
           <input
@@ -193,40 +193,42 @@ export default function Home() {
           />
 
           <button type="submit" disabled={uploading} className={styles['submit-btn']}>
-            {uploading ? 'Guardando en Neon...' : 'Publicar Foto'}
+            {uploading ? 'Guardando en Neon...' : 'Publicar contenido'}
           </button>
         </form>
       </section>
 
-      {/* Cuadrícula de fotos */}
+      {/* Cuadrícula de fotos y videos */}
       <section>
         <h2 className={styles['gallery-section-title']}>Colección</h2>
 
         {photos.length === 0 ? (
           <div className={styles['empty-state']}>
-            <p>No hay fotos todavía en el muro. ¡Sé el primero en compartir una!</p>
+            <p>No hay fotos o videos todavía en el muro. ¡Sé el primero en compartir uno!</p>
           </div>
         ) : (
           <div className={styles['gallery-grid']}>
             {photos.map((photo) => {
               const currentComment = commentInputs[photo.id] || {};
+              const isVideo = photo.url && (photo.url.startsWith('data:video/') || photo.url.match(/\.(mp4|webm|ogg|mov)($|\?)/i));
               return (
                 <article key={photo.id} className={styles['photo-card']}>
-                  <div
-                    className={styles['image-wrapper']}
-                    onContextMenu={(e) => e.preventDefault()}
-                  >
-                    <img
-                      src={photo.url}
-                      alt={photo.caption || 'Foto'}
-                      className={styles['photo-img']}
-                      loading="lazy"
-                      draggable={false}
-                    />
-                    <div
-                      className={styles['protection-overlay']}
-                      onContextMenu={(e) => e.preventDefault()}
-                    />
+                  <div className={styles['image-wrapper']}>
+                    {isVideo ? (
+                      <video
+                        src={photo.url}
+                        controls
+                        playsInline
+                        className={styles['photo-img']}
+                      />
+                    ) : (
+                      <img
+                        src={photo.url}
+                        alt={photo.caption || 'Foto'}
+                        className={styles['photo-img']}
+                        loading="lazy"
+                      />
+                    )}
                   </div>
 
                   <div className={styles['card-body']}>
