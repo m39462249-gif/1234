@@ -61,9 +61,12 @@ export default function Home() {
         setCaption('');
         e.target.reset();
         await fetchPhotos();
+      } else {
+        const errorData = await photoRes.json().catch(() => ({}));
+        alert('Error al guardar foto: ' + (errorData.error || photoRes.statusText));
       }
     } catch (err) {
-      alert(err.message || 'Error al subir');
+      alert('Error en la subida: ' + (err.message || 'Error desconocido'));
     } finally {
       setUploading(false);
     }
