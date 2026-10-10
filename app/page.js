@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAnonToken } from '@/lib/useAnonToken';
+import styles from './page.module.css';
 
 const EMOJIS = ['😂', '❤️', '🔥', '👎'];
 
@@ -31,7 +32,20 @@ export default function Home() {
 
   async function handleUpload(e) {
     e.preventDefault();
-    if (!file || !token || uploading) return;
+    if (!file) {
+      alert('Por favor selecciona una imagen primero');
+      return;
+    }
+    if (uploading) return;
+
+    let activeToken = token;
+    if (!activeToken && typeof window !== 'undefined') {
+      activeToken = localStorage.getItem('anon_token');
+      if (!activeToken) {
+        activeToken = crypto.randomUUID();
+        localStorage.setItem('anon_token', activeToken);
+      }
+    }
 
     setUploading(true);
     try {
@@ -52,7 +66,7 @@ export default function Home() {
         body: JSON.stringify({
           url: uploadData.url,
           caption,
-          uploader_token: token,
+          uploader_token: activeToken,
         }),
       });
 
@@ -73,7 +87,9 @@ export default function Home() {
   }
 
   async function handleReaction(photoId, emoji) {
-    if (!token) return;
+    const activeToken = token || localStorage.getItem('anon_token');
+    if (!activeToken) return;
+
     try {
       const res = await fetch('/api/reactions', {
         method: 'POST',
@@ -81,7 +97,7 @@ export default function Home() {
         body: JSON.stringify({
           photo_id: photoId,
           emoji,
-          reactor_token: token,
+          reactor_token: activeToken,
         }),
       });
       if (res.ok) {
@@ -104,7 +120,8 @@ export default function Home() {
 
   async function handleCommentSubmit(e, photoId) {
     e.preventDefault();
-    if (!token) return;
+    const activeToken = token || localStorage.getItem('anon_token');
+    if (!activeToken) return;
 
     const inputData = commentInputs[photoId] || {};
     const body = inputData.body || '';
@@ -120,7 +137,7 @@ export default function Home() {
           photo_id: photoId,
           body,
           author_name,
-          author_token: token,
+          author_token: activeToken,
         }),
       });
 
@@ -137,102 +154,145 @@ export default function Home() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <header style={{ marginBottom: '30px' }}>
-        <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <input
-            type="file"
-            accept="image/*"
-            required
-            onChange={(e) => setFile(e.target.files[0])}
-          />
+    <div className={styles['app-container']}>
+      <header className={styles['app-header']}>
+        <div className={styles['title-group']}>
+          <h1>
+            Muro Anónimo <span className={styles['badge']}>Neon DB</span>
+          </h1>
+          <p className={styles['subtitle']}>Comparte imágenes, añade reacciones y comenta sin registro.</p>
+        </div>
+        <div className={styles['stats-counter']}>
+          {photos.length} {photos.length === 1 ? 'foto compartida' : 'fotos compartidas'}
+        </div>
+      </header>
+
+      {/* Formulario de Subida con estilo oscuro */}
+      <section className={styles['upload-card']}>
+        <h2 className={styles['upload-card-title']}>Subir una nueva foto</h2>
+        <form onSubmit={handleUpload} className={styles['upload-form']}>
+          <div className={styles['file-input-wrapper']}>
+            <input
+              type="file"
+              accept="image/*"
+              required
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+            <span className={styles['file-label-text']}>
+              {file ? file.name : 'Haz clic o arrastra una imagen aquí'}
+            </span>
+            <span className={styles['file-label-hint']}>Formatos admitidos: JPG, PNG, WEBP, GIF</span>
+          </div>
+
           <input
             type="text"
-            placeholder="Descripción (opcional)..."
+            className={styles['caption-input']}
+            placeholder="Descripción o título (opcional)..."
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
           />
-          <button type="submit" disabled={uploading}>
-            {uploading ? 'Subiendo...' : 'Publicar Foto'}
+
+          <button type="submit" disabled={uploading} className={styles['submit-btn']}>
+            {uploading ? 'Guardando en Neon...' : 'Publicar Foto'}
           </button>
         </form>
-      </header>
+      </section>
 
-      <main style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        {photos.map((photo) => {
-          const currentComment = commentInputs[photo.id] || {};
-          return (
-            <article
-              key={photo.id}
-              style={{
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                padding: '15px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}
-            >
-              <img
-                src={photo.url}
-                alt={photo.caption || 'Foto'}
-                style={{ width: '100%', maxHeight: '500px', objectFit: 'contain' }}
-              />
-              {photo.caption && <p>{photo.caption}</p>}
+      {/* Cuadrícula de fotos */}
+      <section>
+        <h2 className={styles['gallery-section-title']}>Colección</h2>
 
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                {EMOJIS.map((emoji) => {
-                  const count = photo.reactions?.[emoji] || 0;
-                  return (
-                    <button
-                      key={emoji}
-                      onClick={() => handleReaction(photo.id, emoji)}
-                      style={{ padding: '5px 10px' }}
-                    >
-                      {emoji} {count > 0 && count}
-                    </button>
-                  );
-                })}
-              </div>
+        {photos.length === 0 ? (
+          <div className={styles['empty-state']}>
+            <p>No hay fotos todavía en el muro. ¡Sé el primero en compartir una!</p>
+          </div>
+        ) : (
+          <div className={styles['gallery-grid']}>
+            {photos.map((photo) => {
+              const currentComment = commentInputs[photo.id] || {};
+              return (
+                <article key={photo.id} className={styles['photo-card']}>
+                  <div className={styles['image-wrapper']}>
+                    <img
+                      src={photo.url}
+                      alt={photo.caption || 'Foto'}
+                      className={styles['photo-img']}
+                      loading="lazy"
+                    />
+                  </div>
 
-              <section style={{ borderTop: '1px solid #eee', paddingTop: '10px' }}>
-                <h4>Comentarios</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '10px 0' }}>
-                  {photo.comments?.length === 0 && <p style={{ fontSize: '13px' }}>Sin comentarios.</p>}
-                  {photo.comments?.map((c) => (
-                    <div key={c.id} style={{ fontSize: '14px' }}>
-                      <strong>{c.author_name}: </strong>
-                      <span>{c.body}</span>
+                  <div className={styles['card-body']}>
+                    {photo.caption && <p className={styles['photo-caption']}>{photo.caption}</p>}
+
+                    {/* Barra de Reacciones */}
+                    <div className={styles['reactions-bar']}>
+                      {EMOJIS.map((emoji) => {
+                        const count = photo.reactions?.[emoji] || 0;
+                        return (
+                          <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => handleReaction(photo.id, emoji)}
+                            className={`${styles['reaction-btn']} ${count > 0 ? styles['has-votes'] : ''}`}
+                            title={`Reaccionar con ${emoji}`}
+                          >
+                            <span>{emoji}</span>
+                            {count > 0 && <span className={styles['reaction-count']}>{count}</span>}
+                          </button>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
 
-                <form
-                  onSubmit={(e) => handleCommentSubmit(e, photo.id)}
-                  style={{ display: 'flex', gap: '8px' }}
-                >
-                  <input
-                    type="text"
-                    placeholder="Tu nombre (opcional)"
-                    value={currentComment.author_name || ''}
-                    onChange={(e) => handleCommentChange(photo.id, 'author_name', e.target.value)}
-                    style={{ width: '150px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Escribe un comentario..."
-                    required
-                    value={currentComment.body || ''}
-                    onChange={(e) => handleCommentChange(photo.id, 'body', e.target.value)}
-                    style={{ flex: 1 }}
-                  />
-                  <button type="submit">Enviar</button>
-                </form>
-              </section>
-            </article>
-          );
-        })}
-      </main>
+                    {/* Comentarios */}
+                    <section className={styles['comments-section']}>
+                      <h4 className={styles['comments-header']}>
+                        Comentarios ({photo.comments?.length || 0})
+                      </h4>
+                      <div className={styles['comments-list']}>
+                        {(!photo.comments || photo.comments.length === 0) && (
+                          <p className={styles['no-comments-label']}>Sin comentarios aún.</p>
+                        )}
+                        {photo.comments?.map((c) => (
+                          <div key={c.id} className={styles['comment-bubble']}>
+                            <span className={styles['comment-author-name']}>
+                              {c.author_name || 'Anónimo'}
+                            </span>
+                            <span className={styles['comment-text-body']}>{c.body}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <form
+                        onSubmit={(e) => handleCommentSubmit(e, photo.id)}
+                        className={styles['comment-input-form']}
+                      >
+                        <input
+                          type="text"
+                          placeholder="Nombre (opc.)"
+                          className={styles['author-input']}
+                          value={currentComment.author_name || ''}
+                          onChange={(e) => handleCommentChange(photo.id, 'author_name', e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Comentar..."
+                          className={styles['comment-text-input']}
+                          required
+                          value={currentComment.body || ''}
+                          onChange={(e) => handleCommentChange(photo.id, 'body', e.target.value)}
+                        />
+                        <button type="submit" className={styles['send-comment-btn']}>
+                          Enviar
+                        </button>
+                      </form>
+                    </section>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
