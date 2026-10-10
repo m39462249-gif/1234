@@ -385,3 +385,90 @@
   border-radius: var(--radius-lg);
   color: var(--text-muted);
 }
+
+/* =========================================
+   RESPONSIVE MEDIA QUERIES (Móvil & Tablet)
+   ========================================= */
+
+@media (max-width: 900px) {
+  .app-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding: 1.25rem 0.85rem;
+  }
+
+  .app-header {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .title-group h1 {
+    font-size: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .stats-counter {
+    width: 100%;
+    text-align: center;
+  }
+
+  .upload-card {
+    padding: 1.25rem 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .file-input-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .photo-card {
+    border-radius: var(--radius-md);
+  }
+
+  .reactions-bar {
+    justify-content: space-between;
+  }
+
+  .reaction-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .comment-input-form {
+    flex-direction: column;
+  }
+
+  .author-input,
+  .comment-text-input {
+    width: 100%;
+  }
+
+  .send-comment-btn {
+    width: 100%;
+    padding: 0.55rem;
+  }
+}
+
