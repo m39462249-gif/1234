@@ -1,0 +1,219 @@
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(5, 5, 6, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.lightbox-modal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  max-width: 1050px;
+  width: 100%;
+  max-height: 92vh;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.lightbox-media-col {
+  background-color: #08090a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.lightbox-details-col {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  max-height: 92vh;
+  overflow-y: auto;
+  gap: 1.25rem;
+}
+
+.lightbox-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lightbox-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.lightbox-actions-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-icon-action {
+  color: var(--text-muted);
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.btn-icon-action:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+.btn-delete {
+  color: var(--danger);
+  border: 1px solid rgba(207, 75, 75, 0.2);
+  background: rgba(207, 75, 75, 0.05);
+}
+
+.btn-delete:hover {
+  background: rgba(207, 75, 75, 0.15);
+  color: var(--danger-hover);
+  border-color: var(--danger);
+}
+
+/* Edit Mode & View Mode */
+.view-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.view-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.view-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.view-tag-chip {
+  font-size: 0.78rem;
+  color: var(--accent-light);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.edit-input,
+.edit-textarea {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.edit-input:focus,
+.edit-textarea:focus {
+  border-color: var(--accent-light);
+}
+
+.edit-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.btn-save {
+  background-color: var(--accent);
+  color: #fff;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.btn-save:hover {
+  background-color: var(--accent-light);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.2rem 0;
+}
+
+.close-lightbox-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(10, 10, 12, 0.7);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  z-index: 10;
+  transition: all 0.2s;
+  border: 1px solid var(--border-color);
+}
+
+.close-lightbox-btn:hover {
+  background: var(--bg-card);
+  color: #fff;
+}
+
+@media (max-width: 860px) {
+  .lightbox-modal {
+    grid-template-columns: 1fr;
+    max-height: 94vh;
+  }
+  .lightbox-media-col {
+    max-height: 45vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .lightbox-details-col {
+    max-height: 50vh;
+  }
+}
