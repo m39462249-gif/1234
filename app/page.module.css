@@ -199,6 +199,8 @@
   aspect-ratio: 4 / 3;
   background-color: #0d0e10;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .photo-img {
@@ -206,6 +208,17 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.protection-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: transparent;
+  cursor: default;
 }
 
 .photo-card:hover .photo-img {

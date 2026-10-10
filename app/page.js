@@ -212,12 +212,20 @@ export default function Home() {
               const currentComment = commentInputs[photo.id] || {};
               return (
                 <article key={photo.id} className={styles['photo-card']}>
-                  <div className={styles['image-wrapper']}>
+                  <div
+                    className={styles['image-wrapper']}
+                    onContextMenu={(e) => e.preventDefault()}
+                  >
                     <img
                       src={photo.url}
                       alt={photo.caption || 'Foto'}
                       className={styles['photo-img']}
                       loading="lazy"
+                      draggable={false}
+                    />
+                    <div
+                      className={styles['protection-overlay']}
+                      onContextMenu={(e) => e.preventDefault()}
                     />
                   </div>
 
