@@ -193,14 +193,14 @@ export default function Home() {
           <div className={styles['file-input-wrapper']}>
             <input
               type="file"
-              accept="image/*,video/*"
+              accept="image/*,video/*,video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm,.m4v,.mkv"
               required
               onChange={(e) => setFile(e.target.files[0])}
             />
             <span className={styles['file-label-text']}>
-              {file ? file.name : 'Haz clic o arrastra una foto o video aquí'}
+              {file ? file.name : 'Haz clic o toca para elegir una foto o video'}
             </span>
-            <span className={styles['file-label-hint']}>Formatos admitidos: JPG, PNG, WEBP, GIF, MP4, WEBM</span>
+            <span className={styles['file-label-hint']}>Fotos y videos: JPG, PNG, MP4, MOV, WEBM</span>
           </div>
 
           <input
