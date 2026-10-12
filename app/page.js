@@ -52,7 +52,7 @@ export default function Home() {
   async function handleUpload(e) {
     e.preventDefault();
     if (!file) {
-      alert('Por favor selecciona una imagen primero');
+      alert('Por favor selecciona una foto o video primero');
       return;
     }
     if (uploading) return;
