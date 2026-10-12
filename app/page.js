@@ -13,6 +13,25 @@ export default function Home() {
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
   const [commentInputs, setCommentInputs] = useState({});
+  const [selectedMedia, setSelectedMedia] = useState(null);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        setSelectedMedia(null);
+      }
+    }
+    if (selectedMedia) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [selectedMedia]);
 
   async function fetchPhotos() {
     try {
@@ -213,7 +232,11 @@ export default function Home() {
               const isVideo = photo.url && (photo.url.startsWith('data:video/') || photo.url.match(/\.(mp4|webm|ogg|mov)($|\?)/i));
               return (
                 <article key={photo.id} className={styles['photo-card']}>
-                  <div className={styles['image-wrapper']}>
+                  <div
+                    className={`${styles['image-wrapper']} ${styles['image-clickable']}`}
+                    onClick={() => setSelectedMedia({ url: photo.url, caption: photo.caption, isVideo })}
+                    title="Haz clic para ver en pantalla completa"
+                  >
                     {isVideo ? (
                       <video
                         src={photo.url}
@@ -303,6 +326,50 @@ export default function Home() {
           </div>
         )}
       </section>
+
+      {/* Modal / Lightbox de imagen o video completo */}
+      {selectedMedia && (
+        <div
+          className={styles['modal-overlay']}
+          onClick={() => setSelectedMedia(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className={styles['modal-content']}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles['modal-close-btn']}
+              onClick={() => setSelectedMedia(null)}
+              aria-label="Cerrar vista completa"
+              title="Cerrar (Esc)"
+            >
+              ✕
+            </button>
+            {selectedMedia.isVideo ? (
+              <video
+                src={selectedMedia.url}
+                controls
+                autoPlay
+                playsInline
+                className={styles['modal-video']}
+              />
+            ) : (
+              <img
+                src={selectedMedia.url}
+                alt={selectedMedia.caption || 'Vista completa'}
+                className={styles['modal-img']}
+              />
+            )}
+            {selectedMedia.caption && (
+              <p className={styles['modal-caption']}>{selectedMedia.caption}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
